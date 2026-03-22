@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import AveModal from "./components/AveModal";
+import "./App.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
@@ -10,6 +11,7 @@ function App() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedAve, setSelectedAve] = useState(null);
+  const [showNav, setShowNav] = useState(true);
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
@@ -75,156 +77,171 @@ function App() {
   };
 
   return (
-    <div className="min-vh-100">
+    <div className="app-container">
       {/* Navbar */}
-      <nav className="navbar">
-        <div className="container-fluid">
-          <span className="navbar-brand">🦅 Aves de Chile</span>
+      <nav className="navbar-new">
+        <div className="navbar-content">
+          <div className="navbar-brand">
+            <img
+              src="/bilibird-crema.png"
+              alt="Bilibird Logo"
+              className="brand-icon-img"
+            />
+          </div>
+          <div className="navbar-links">
+            <a href="#about" className="nav-link">
+              Acerca de
+            </a>
+            <a href="#project" className="nav-link">
+              Proyecto
+            </a>
+            <a href="#service" className="nav-link">
+              Servicio
+            </a>
+            <a href="#team" className="nav-link">
+              Equipo
+            </a>
+            <a href="#contact" className="nav-link">
+              Contacto
+            </a>
+            <button
+              className="btn-explore-nav"
+              onClick={handleAllAves}
+              disabled={loading}
+            >
+              Explorar Ahora
+            </button>
+          </div>
         </div>
       </nav>
 
-      {/* Contenedor Principal */}
-      <div className="container-fluid">
-        <div className="main-container">
-          {/* Hero Section */}
-          <div className="hero-section">
-            <h1 className="hero-title">Descubre las Aves de Chile</h1>
-            <p className="hero-subtitle">
-              Explora la biodiversidad de nuestro país con imágenes de alta
-              calidad
-            </p>
-          </div>
-
-          {/* Sección de Búsqueda */}
-          <div className="search-card">
-            <h5 className="search-title">🔍 Buscar Aves</h5>
-
-            <div className="input-group">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Buscar por nombre común o científico..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={handleKeyPress}
-              />
-              <button
-                className="btn btn-primary btn-search"
-                onClick={handleSearch}
-                disabled={loading}
-              >
-                {loading ? "Buscando..." : "Buscar"}
-              </button>
-            </div>
-
-            <div className="btn-group-custom">
-              <button
-                className="btn btn-all"
-                onClick={handleAllAves}
-                disabled={loading}
-              >
-                📋 Todas (Rápido)
-              </button>
-              <button
-                className="btn btn-images"
-                onClick={handleWithImages}
-                disabled={loading}
-              >
-                🖼️ Con Imágenes
-              </button>
+      {/* Hero Container - Split Layout */}
+      <div className="hero-container">
+        {/* Top Section - Content */}
+        <section className="hero-top-section">
+          <div className="hero-top-content">
+            <h1 className="hero-title-main">AVES EN CHILE</h1>
+            <div className="hero-layout-bottom">
+              <div className="hero-search-section">
+                <div className="hero-buttons-group">
+                  <input
+                    type="text"
+                    className="hero-search-input"
+                    placeholder="Encuentra tu Especie"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                  />
+                  <button
+                    className="btn-search-hero"
+                    onClick={handleSearch}
+                    disabled={loading}
+                  >
+                    {loading ? "Buscando..." : "Explorar Ahora"}
+                  </button>
+                </div>
+              </div>
+              <div className="hero-description-box">
+                <p>
+                  Descubre las Aves de Chile - Explora nuestra biodiversidad con
+                  imágenes e información de alta calidad.
+                </p>
+              </div>
             </div>
           </div>
+        </section>
 
-          {/* Estado de Carga */}
-          {loading && (
-            <div className="loading-container">
-              <div className="spinner"></div>
-              <p className="loading-text">Buscando aves...</p>
-            </div>
-          )}
-
-          {/* Alerta de Error */}
-          {error && (
-            <div className="alert-custom">
-              <span>⚠️ {error}</span>
-              <button className="alert-close" onClick={() => setError(null)}>
-                ×
-              </button>
-            </div>
-          )}
-
-          {/* Grid de Aves */}
-          {!loading && aves.length > 0 && (
-            <>
-              <div className="row">
-                {aves.map((ave) => (
-                  <div key={ave.codigoEspecie} className="card">
-                    <div className="card-image">
-                      {ave.imagenUrl ? (
-                        <img
-                          src={ave.imagenUrl}
-                          alt={ave.nombreComun}
-                          onError={(e) => {
-                            e.target.style.display = "none";
-                          }}
-                        />
-                      ) : (
-                        <div className="card-image-placeholder">📷</div>
-                      )}
-                    </div>
-
-                    <div className="card-body">
-                      <h5 className="card-title">{ave.nombreComun}</h5>
-                      <p className="card-scientific">{ave.nombreCientifico}</p>
-
-                      <div className="card-info">
-                        {ave.familiaComun && (
-                          <div className="info-item">
-                            <strong>Familia:</strong> {ave.familiaComun}
-                          </div>
-                        )}
-                        {ave.orden && (
-                          <div className="info-item">
-                            <strong>Orden:</strong> {ave.orden}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="card-footer">
-                        <button
-                          className="btn-details"
-                          onClick={() => setSelectedAve(ave)}
-                        >
-                          Ver Detalles →
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="results-info">
-                Se encontraron{" "}
-                <span className="results-count">{aves.length}</span> ave
-                {aves.length !== 1 ? "s" : ""}
-              </div>
-            </>
-          )}
-
-          {/* Mensaje Vacío */}
-          {!loading && aves.length === 0 && !error && (
-            <div className="empty-state">
-              <div className="empty-icon">🦉</div>
-              <h3 className="empty-title">Bienvenido a Aves de Chile</h3>
-              <p className="empty-text">
-                Usa los botones arriba para buscar o ver las aves disponibles
-              </p>
-            </div>
-          )}
-        </div>
+        {/* Bottom Section - Background Image */}
+        <section className="hero-bottom-section"></section>
       </div>
 
-      {/* Modal de Detalles */}
+      {/* Alert Messages */}
+      {error && (
+        <div className="alert-container">
+          <div className="alert-box alert-error">
+            <span className="alert-icon">⚠️</span>
+            <span className="alert-message">{error}</span>
+            <button className="alert-close-btn" onClick={() => setError(null)}>
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div className="loading-overlay">
+          <div className="loading-spinner"></div>
+          <p className="loading-text">Buscando aves...</p>
+        </div>
+      )}
+
+      {/* Results Grid */}
+      {!loading && aves.length > 0 && (
+        <section className="results-section">
+          <div className="results-header">
+            <h2>
+              Se encontraron <span className="count-badge">{aves.length}</span>{" "}
+              Ave
+              {aves.length !== 1 ? "s" : ""}
+            </h2>
+          </div>
+          <div className="birds-grid">
+            {aves.map((ave) => (
+              <div key={ave.codigoEspecie} className="bird-card">
+                <div className="card-image-wrapper">
+                  {ave.imagenUrl ? (
+                    <img
+                      src={ave.imagenUrl}
+                      alt={ave.nombreComun}
+                      className="card-bird-image"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <div className="card-image-placeholder">📷</div>
+                  )}
+                </div>
+                <div className="card-content">
+                  <h3 className="card-bird-name">{ave.nombreComun}</h3>
+                  <p className="card-scientific-name">{ave.nombreCientifico}</p>
+                  <div className="card-meta">
+                    {ave.familiaComun && (
+                      <span className="meta-item">{ave.familiaComun}</span>
+                    )}
+                    {ave.orden && (
+                      <span className="meta-item">{ave.orden}</span>
+                    )}
+                  </div>
+                  <button
+                    className="btn-view-details"
+                    onClick={() => setSelectedAve(ave)}
+                  >
+                    Ver Detalles →
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Empty State */}
+      {!loading && aves.length === 0 && !error && (
+        <section className="empty-state-section">
+          <div className="empty-content">
+            <div className="empty-icon">🦉</div>
+            <h3 className="empty-title">Bienvenido a Aves Chile</h3>
+            <p className="empty-description">
+              Busca una especie de ave específica o explora nuestra colección
+              completa
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* Modal */}
       {selectedAve && (
         <AveModal ave={selectedAve} onClose={() => setSelectedAve(null)} />
       )}
